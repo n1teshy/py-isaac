@@ -156,18 +156,21 @@ class Settings(SettingsInterface):
         if self.response_generator is None:
             self.select_lm()
         key = safe_input(f"please enter your {self.response_generator} key: ").strip()
-        if self.response_generator == c.RSPNS_GNRTR_GROQ:
-            self.groq_key = key
-        else:
-            self.gemini_key = key
+        if len(key) > 0:
+            if self.response_generator == c.RSPNS_GNRTR_GROQ:
+                self.groq_key = key
+            else:
+                self.gemini_key = key
         write()
 
-    def set_sys_msg(self, message: str):
+    def instruct_lm(self):
         """
         sets the system message to be used for querying the language
         model.
         """
-        self.system_message = message
+        message = safe_input("instruction: ")
+        if len(message.strip()) > 0:
+            self.system_message = message
 
     def toggle_context(self):
         """

@@ -167,21 +167,6 @@ def handle_toggle(args: list[str]):
         glb.settings.toggle_hearing()
 
 
-def set_sys_msg(args: list[str]):
-    """sets the system message if it is valid."""
-    if len(args) == 0:
-        write(f"{CMD_INSTRUCT} needs an argument")
-        return
-    if len(args) > 1:
-        write(f"{CMD_INSTRUCT} only takes one argument")
-        return
-    message = args[0]
-    if len(message.strip()) == 0:
-        write("instruction must not be empty")
-        return
-    glb.settings.set_sys_msg(message)
-
-
 def handle_cmd():
     """handles the `:cmd` command, i.e. launches the appropriate shell."""
     try:
@@ -262,7 +247,7 @@ def display_commands():
         "%s%s%s to mute the assistant" % (BOLD_BRIGHT, CMD_MUTE, RESET),
         "%s%s%s to launch a shell session" % (BOLD_BRIGHT, CMD_CMD, RESET),
         "%s%s%s to print this help message" % (BOLD_BRIGHT, CMD_COMMANDS, RESET),
-        "%s%s%s for clearing the console" % (BOLD_BRIGHT, CMD_CLEAR, RESET),
+        "%s%s%s to clear the terminal" % (BOLD_BRIGHT, CMD_CLEAR, RESET),
         "%s%s%s to exit" % (BOLD_BRIGHT, CMD_EXIT, RESET),
     ]
     write("\n".join(lines))
@@ -279,7 +264,7 @@ def handle_command(words: list[str]):
     elif command == CMD_KEY:
         glb.settings.set_key()
     elif command == CMD_INSTRUCT:
-        set_sys_msg(words[1:])
+        glb.settings.instruct_lm()
     elif command == CMD_STATUS:
         display_status()
     elif command == CMD_MUTE:
