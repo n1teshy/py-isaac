@@ -1,0 +1,5 @@
+yapper-tts
+pyreadline3; sys_platform == 'win32'
+py-listener
+psutil
+rich

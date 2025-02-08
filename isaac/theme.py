@@ -1,0 +1,7 @@
+RED = "\033[31m"
+GREEN = "\033[32m"
+
+BRIGHT = "\033[97m"
+BOLD_BRIGHT = "\033[1;97m"
+
+RESET = "\033[0m"
