@@ -1,4 +1,4 @@
-## I.S.A.A.C - Intelligent System for Advanced Assistance And Companionship
+## I.S.A.A.C - Intelligent System for Advanced Assistance and Companionship
 
 ![Demo Image](https://github.com/n1teshy/py-isaac/blob/main/images/1.png)
 
