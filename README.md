@@ -1,5 +1,7 @@
 ## I.S.A.A.C - Intelligent System for Advanced Assistance And Companionship
 
+![Demo Image](https://github.com/n1teshy/py-isaac/blob/main/images/1.png)
+
 I.S.A.A.C is a completely local, on-terminal AI assistant that lets you use ChatGPT-like features on the terminal so you don't have to switch windows every 2 minutes, it comes with a set of commands and features that you can turn on or off to get the most out of it, I.S.A.A.C can talk to you using locally run speech-to-text and text-to-speech models allowing you to put your fingers to better use.
 
 - Run `pip install py-isaac`.
