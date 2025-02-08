@@ -39,3 +39,7 @@ I.S.A.A.C is a completely local, on-terminal AI assistant that lets you use Chat
 - `:commands` to see all available commands.
 - `:clear` to clear the terminal.
 - `:exit` to turn the assistant off.
+
+---
+### Tasks
+- [ ] add deepseek support.
