@@ -29,10 +29,9 @@ setup(
     include_package_data=True,
     classifiers=[
         "Intended Audience :: Developers",
-        "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     ],
     entry_points={
         "console_scripts": [
@@ -42,5 +41,4 @@ setup(
     platforms="Posix; Windows",
     keywords=["AI assistant", "local assistant"],
     python_requires=">=3.9",
-    license="MIT",
 )
