@@ -15,7 +15,7 @@ import isaac.lang_models as lang_models
 import isaac.speech as speech
 from isaac.settings import Settings
 from isaac.theme import BOLD_BRIGHT, BRIGHT, RESET
-from isaac.utils import clear, handle_lm_response, write, label_switch
+from isaac.utils import clear, print_welcome, handle_lm_response, write, label_switch
 from difflib import SequenceMatcher
 
 CMD_SELECT = ":select"
@@ -58,19 +58,6 @@ selectables = [
 ]
 togglables = [TOGGLABLE_SPEECH, TOGGLABLE_HEARING, TOGGLABLE_CONTEXT]
 command_args = {CMD_SELECT: selectables, CMD_TOGGLE: togglables}
-
-
-def print_welcome():
-    """Prints the welcome message on the screen."""
-    banner = """
-%s ___   ____      _         _      ____
-|_ _| / ___|    / \       / \    / ___|
- | |  \___ \   / _ \     / _ \  | |
- | | _ ___) | / ___ \ _ / ___ \ | |___
-|___(_)____(_)_/   \_(_)_/   \_(_)____|%s"""
-    message = banner + "   type %s%s%s to see commands.\n"
-    message = message % (BRIGHT, RESET, BOLD_BRIGHT, CMD_COMMANDS, RESET)
-    print(message)
 
 
 def is_command(text: str) -> bool:

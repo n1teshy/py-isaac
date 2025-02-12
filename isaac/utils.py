@@ -43,6 +43,19 @@ def label_switch(switch: bool):
     return label
 
 
+def print_welcome():
+    """Prints the welcome message on the screen."""
+    banner = """
+%s ___   ____      _         _      ____
+|_ _| / ___|    / \       / \    / ___|
+ | |  \___ \   / _ \     / _ \  | |
+ | | _ ___) | / ___ \ _ / ___ \ | |___
+|___(_)____(_)_/   \_(_)_/   \_(_)____|%s"""
+    message = banner + "   type %s:commands%s to see commands.\n"
+    message = message % (theme.BRIGHT, theme.RESET, theme.BOLD_BRIGHT, theme.RESET)
+    print(message)
+
+
 def get_piper_voice_enum(str_voice: str) -> Union[PiperVoiceUS, PiperVoiceUK]:
     """
     takes stringified name of a piper voice and return the matching attribute
