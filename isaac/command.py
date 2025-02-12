@@ -18,47 +18,6 @@ from isaac.theme import BOLD_BRIGHT, BRIGHT, RESET
 from isaac.utils import clear, print_welcome, handle_lm_response, write, label_switch
 from difflib import SequenceMatcher
 
-CMD_SELECT = ":select"
-CMD_TOGGLE = ":toggle"
-CMD_KEY = ":key"
-CMD_INSTRUCT = ":instruct"
-CMD_STATUS = ":status"
-CMD_MUTE = ":mute"
-CMD_CMD = ":cmd"
-CMD_COMMANDS = ":commands"
-CMD_CLEAR = ":clear"
-CMD_EXIT = ":exit"
-
-SELECTABLE_LM_PROVIDER = "lm_provider"
-SELECTABLE_VOICE = "voice"
-SELECTABLE_LANG_MODEL = "lm"
-SELECTABLE_WHISPER_MODEL = "whisper"
-
-TOGGLABLE_SPEECH = "speech"
-TOGGLABLE_HEARING = "hearing"
-TOGGLABLE_CONTEXT = "context"
-
-commands = {
-    CMD_SELECT,
-    CMD_TOGGLE,
-    CMD_KEY,
-    CMD_INSTRUCT,
-    CMD_STATUS,
-    CMD_MUTE,
-    CMD_CMD,
-    CMD_COMMANDS,
-    CMD_CLEAR,
-    CMD_EXIT,
-}
-selectables = [
-    SELECTABLE_LM_PROVIDER,
-    SELECTABLE_LANG_MODEL,
-    SELECTABLE_VOICE,
-    SELECTABLE_WHISPER_MODEL,
-]
-togglables = [TOGGLABLE_SPEECH, TOGGLABLE_HEARING, TOGGLABLE_CONTEXT]
-command_args = {CMD_SELECT: selectables, CMD_TOGGLE: togglables}
-
 
 def is_command(text: str) -> bool:
     """
@@ -71,7 +30,7 @@ def command_exists(word: str) -> bool:
     """
     checks if the given word is one of the valid commands defined in the file.
     """
-    return word in commands
+    return word in c.commands
 
 
 def handle_misspell(word: str) -> str:
@@ -83,7 +42,7 @@ def handle_misspell(word: str) -> str:
             0.8 if c[:2] != word[:2] else 1
         )
 
-    similar = max(commands, key=key)
+    similar = max(c.commands, key=key)
     write(f"command not found, did you mean '{similar}'?")
 
 
@@ -98,13 +57,13 @@ def command_completer(text: str, state: int) -> Optional[str]:
     command = words[0]
     if not command_exists(command):
         if len(words) == 1:
-            options = [cmd for cmd in commands if cmd.startswith(command)]
+            options = [cmd for cmd in c.commands if cmd.startswith(command)]
             return options[state] if state < len(options) else None
         return None
-    if command not in command_args:
+    if command not in c.command_args:
         return
     arg = words[1] if len(words) == 2 else ""
-    options = [option for option in command_args[command] if option.startswith(arg)]
+    options = [option for option in c.command_args[command] if option.startswith(arg)]
     return options[state] if state < len(options) else None
 
 
@@ -118,15 +77,15 @@ def handle_select(args: list[str]):
         return
 
     arg = args[0]
-    if arg not in selectables:
-        write(f"invalid argument {arg}, must be one of {selectables}")
+    if arg not in c.selectables:
+        write(f"invalid argument {arg}, must be one of {c.selectables}")
         return
 
-    if arg == SELECTABLE_LM_PROVIDER:
+    if arg == c.SELECTABLE_LM_PROVIDER:
         glb.settings.select_lm_provider()
-    elif arg == SELECTABLE_LANG_MODEL:
+    elif arg == c.SELECTABLE_LANG_MODEL:
         glb.settings.select_lm()
-    elif arg == SELECTABLE_VOICE:
+    elif arg == c.SELECTABLE_VOICE:
         glb.settings.select_voice()
     else:
         glb.settings.select_whisper_size()
@@ -142,13 +101,13 @@ def handle_toggle(args: list[str]):
         return
 
     arg = args[0]
-    if arg not in togglables:
-        write(f"invalid argument {arg}, argument must be one of {togglables}")
+    if arg not in c.togglables:
+        write(f"invalid argument {arg}, argument must be one of {c.togglables}")
         return
 
-    if arg == TOGGLABLE_SPEECH:
+    if arg == c.TOGGLABLE_SPEECH:
         glb.settings.toggle_speech()
-    elif arg == TOGGLABLE_CONTEXT:
+    elif arg == c.TOGGLABLE_CONTEXT:
         glb.settings.toggle_context()
     else:
         glb.settings.toggle_hearing()
@@ -206,36 +165,36 @@ def display_status():
 def display_commands():
     """Displays the available commands."""
     lines = [
-        "%s%s%s to turn features on or off" % (BOLD_BRIGHT, CMD_TOGGLE, RESET),
+        "%s%s%s to turn features on or off" % (BOLD_BRIGHT, c.CMD_TOGGLE, RESET),
         "  %s%s %s%s to toggle the assistant's speech"
-        % (BRIGHT, CMD_TOGGLE, TOGGLABLE_SPEECH, RESET),
+        % (BRIGHT, c.CMD_TOGGLE, c.TOGGLABLE_SPEECH, RESET),
         (
             "  %s%s %s%s to toggle the use of conversation"
             " history for coherent responses"
         )
-        % (BRIGHT, CMD_TOGGLE, TOGGLABLE_CONTEXT, RESET),
+        % (BRIGHT, c.CMD_TOGGLE, c.TOGGLABLE_CONTEXT, RESET),
         "  %s%s %s%s to toggle the assistant's ability to hear you"
-        % (BRIGHT, CMD_TOGGLE, TOGGLABLE_HEARING, RESET),
+        % (BRIGHT, c.CMD_TOGGLE, c.TOGGLABLE_HEARING, RESET),
         "%s%s%s for selecting from available models and voices"
-        % (BOLD_BRIGHT, CMD_SELECT, RESET),
+        % (BOLD_BRIGHT, c.CMD_SELECT, RESET),
         "  %s%s %s%s to select the language model provider"
-        % (BRIGHT, CMD_SELECT, SELECTABLE_LM_PROVIDER, RESET),
+        % (BRIGHT, c.CMD_SELECT, c.SELECTABLE_LM_PROVIDER, RESET),
         "  %s%s %s%s to select the model for generating responses"
-        % (BRIGHT, CMD_SELECT, SELECTABLE_LANG_MODEL, RESET),
+        % (BRIGHT, c.CMD_SELECT, c.SELECTABLE_LANG_MODEL, RESET),
         "  %s%s %s%s to select the assistant's voice"
-        % (BRIGHT, CMD_SELECT, SELECTABLE_VOICE, RESET),
+        % (BRIGHT, c.CMD_SELECT, c.SELECTABLE_VOICE, RESET),
         "  %s%s %s%s to select the model interpreting speech"
-        % (BRIGHT, CMD_SELECT, SELECTABLE_WHISPER_MODEL, RESET),
+        % (BRIGHT, c.CMD_SELECT, c.SELECTABLE_WHISPER_MODEL, RESET),
         "%s%s%s to set the LLM API key for the selected provider"
-        % (BOLD_BRIGHT, CMD_KEY, RESET),
+        % (BOLD_BRIGHT, c.CMD_KEY, RESET),
         "%s%s%s to instruct the model to behave a certain way"
-        % (BOLD_BRIGHT, CMD_INSTRUCT, RESET),
-        "%s%s%s to display status and settings" % (BOLD_BRIGHT, CMD_STATUS, RESET),
-        "%s%s%s to mute the assistant" % (BOLD_BRIGHT, CMD_MUTE, RESET),
-        "%s%s%s to launch a shell session" % (BOLD_BRIGHT, CMD_CMD, RESET),
-        "%s%s%s to print this help message" % (BOLD_BRIGHT, CMD_COMMANDS, RESET),
-        "%s%s%s to clear the terminal" % (BOLD_BRIGHT, CMD_CLEAR, RESET),
-        "%s%s%s to exit" % (BOLD_BRIGHT, CMD_EXIT, RESET),
+        % (BOLD_BRIGHT, c.CMD_INSTRUCT, RESET),
+        "%s%s%s to display status and settings" % (BOLD_BRIGHT, c.CMD_STATUS, RESET),
+        "%s%s%s to mute the assistant" % (BOLD_BRIGHT, c.CMD_MUTE, RESET),
+        "%s%s%s to launch a shell session" % (BOLD_BRIGHT, c.CMD_CMD, RESET),
+        "%s%s%s to print this help message" % (BOLD_BRIGHT, c.CMD_COMMANDS, RESET),
+        "%s%s%s to clear the terminal" % (BOLD_BRIGHT, c.CMD_CLEAR, RESET),
+        "%s%s%s to exit" % (BOLD_BRIGHT, c.CMD_EXIT, RESET),
     ]
     write("\n".join(lines))
 
@@ -244,25 +203,25 @@ def handle_command(words: list[str]):
     """handles words as command."""
     command = words[0]
 
-    if command == CMD_SELECT:
+    if command == c.CMD_SELECT:
         handle_select(words[1:])
-    elif command == CMD_TOGGLE:
+    elif command == c.CMD_TOGGLE:
         handle_toggle(words[1:])
-    elif command == CMD_KEY:
+    elif command == c.CMD_KEY:
         glb.settings.set_key()
-    elif command == CMD_INSTRUCT:
+    elif command == c.CMD_INSTRUCT:
         glb.settings.instruct_lm()
-    elif command == CMD_STATUS:
+    elif command == c.CMD_STATUS:
         display_status()
-    elif command == CMD_MUTE:
+    elif command == c.CMD_MUTE:
         speech.mute()
-    elif command == CMD_CMD:
+    elif command == c.CMD_CMD:
         handle_cmd()
-    elif command == CMD_COMMANDS:
+    elif command == c.CMD_COMMANDS:
         display_commands()
-    elif command == CMD_CLEAR:
+    elif command == c.CMD_CLEAR:
         clear()
-    elif command == CMD_EXIT:
+    elif command == c.CMD_EXIT:
         glb.settings.dump_to_cache()
         if glb.listener is not None:
             glb.settings.disable_hearing()
@@ -288,7 +247,7 @@ def run_loop():
                     words = shlex.split(query)
                     if command_exists(words[0]):
                         handle_command(words)
-                        if words[0] == CMD_EXIT:
+                        if words[0] == c.CMD_EXIT:
                             break
                     else:
                         handle_misspell(words[0])

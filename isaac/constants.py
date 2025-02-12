@@ -77,3 +77,45 @@ FILE_SHELL = "powershell.exe" if os.name == "nt" else "/bin/sh"
 
 # messages
 MSG_LANG_MODEL_ERROR = "could not process that query, something went wrong"
+
+# commands
+CMD_SELECT = ":select"
+CMD_TOGGLE = ":toggle"
+CMD_KEY = ":key"
+CMD_INSTRUCT = ":instruct"
+CMD_STATUS = ":status"
+CMD_MUTE = ":mute"
+CMD_CMD = ":cmd"
+CMD_COMMANDS = ":commands"
+CMD_CLEAR = ":clear"
+CMD_EXIT = ":exit"
+
+SELECTABLE_LM_PROVIDER = "lm_provider"
+SELECTABLE_VOICE = "voice"
+SELECTABLE_LANG_MODEL = "lm"
+SELECTABLE_WHISPER_MODEL = "whisper"
+
+TOGGLABLE_SPEECH = "speech"
+TOGGLABLE_HEARING = "hearing"
+TOGGLABLE_CONTEXT = "context"
+
+commands = {
+    CMD_SELECT,
+    CMD_TOGGLE,
+    CMD_KEY,
+    CMD_INSTRUCT,
+    CMD_STATUS,
+    CMD_MUTE,
+    CMD_CMD,
+    CMD_COMMANDS,
+    CMD_CLEAR,
+    CMD_EXIT,
+}
+selectables = [
+    SELECTABLE_LM_PROVIDER,
+    SELECTABLE_LANG_MODEL,
+    SELECTABLE_VOICE,
+    SELECTABLE_WHISPER_MODEL,
+]
+togglables = [TOGGLABLE_SPEECH, TOGGLABLE_HEARING, TOGGLABLE_CONTEXT]
+command_args = {CMD_SELECT: selectables, CMD_TOGGLE: togglables}

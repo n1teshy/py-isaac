@@ -8,6 +8,7 @@ from rich.markdown import Markdown
 from rich.segment import Segment
 from yapper import PiperVoiceUK, PiperVoiceUS
 
+import isaac.constants as c
 import isaac.globals as glb
 import isaac.speech as speech
 import isaac.sync as sync
@@ -51,8 +52,14 @@ def print_welcome():
  | |  \___ \   / _ \     / _ \  | |
  | | _ ___) | / ___ \ _ / ___ \ | |___
 |___(_)____(_)_/   \_(_)_/   \_(_)____|%s"""
-    message = banner + "   type %s:commands%s to see commands.\n"
-    message = message % (theme.BRIGHT, theme.RESET, theme.BOLD_BRIGHT, theme.RESET)
+    message = banner + "   type %s%s%s to see commands.\n"
+    message = message % (
+        theme.BRIGHT,
+        theme.RESET,
+        theme.BOLD_BRIGHT,
+        c.CMD_COMMANDS,
+        theme.RESET,
+    )
     print(message)
 
 
