@@ -42,4 +42,9 @@ I.S.A.A.C is a completely local, on-terminal AI assistant that lets you use Chat
 
 ---
 ### Tasks
-- [ ] add deepseek support.
+- [ ] add shell command execution using shebang, e.g. "!ls".
+- [ ] add ollama support, user should be able to choose locally running ollama API as language model provider.
+- [ ] User profiling, store general likes and dislikes, e.g. "concise answers", "a project they're working on" etc.
+
+### Contributing
+If you don't know where to start, pick one of the pending tasks and start with that. If if you want to fix a bug or add other enhancements, please raise an issue first.
