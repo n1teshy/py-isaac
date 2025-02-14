@@ -1,21 +1,16 @@
 import re
 import json
+import string
+import threading
 
 from yapper import GeminiModel, GroqModel, PiperVoiceUK, PiperVoiceUS
 
 import isaac.constants as c
-from isaac.utils import (
-    select_from,
-    write,
-    get_piper_voice_enum,
-    handle_lm_response,
-    safe_input,
-)
+from isaac.utils import select_from, write, get_piper_voice_enum, safe_input
 from isaac.types import SettingsInterface
 import isaac.speech as speech
 from yapper import PiperSpeaker
 import isaac.globals as glb
-import isaac.lang_models as lm
 
 
 whisper_options = [
@@ -236,15 +231,26 @@ class Settings(SettingsInterface):
         """enables the assistant to hear user with py-listener."""
         from listener import Listener
 
+        event_completion = threading.Event()
+
         def handle_speech(query: list[str]):
             # print voice transcription on the console so
             # the user may know what the assistant interprets
             query = " ".join(query).strip()
             if re.search("\w+", query) is None:
                 return
+            splits = query.split(" ")
+            if len(splits) == 1:
+                candidate = "".join(c for c in splits[0] if c not in string.punctuation)
+                candidate = ":" + candidate.lower()
+                if candidate in c.commands:
+                    query = candidate
             write(re.sub(r"\n+", ";", query))
-            handle_lm_response(lm.ask(query))
-            write(">> ", end="")
+            glb.query_queue.put((query, event_completion))
+            event_completion.wait()
+            if not glb.event_exit.is_set():
+                write(">> ", end="")
+                event_completion.clear()
 
         glb.listener = Listener(
             time_window=3,

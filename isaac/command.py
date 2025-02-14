@@ -11,11 +11,10 @@ import isaac.constants as c
 import isaac.globals as glb
 import psutil
 import os
-import isaac.lang_models as lang_models
 import isaac.speech as speech
-from isaac.settings import Settings
 from isaac.theme import BOLD_BRIGHT, BRIGHT, RESET
-from isaac.utils import clear, print_welcome, handle_lm_response, write, label_switch
+from isaac.utils import clear, write, label_switch, handle_lm_response
+import isaac.lang_models as lm
 from difflib import SequenceMatcher
 
 
@@ -199,6 +198,12 @@ def display_commands():
     write("\n".join(lines))
 
 
+def handle_exit():
+    glb.settings.dump_to_cache()
+    if glb.listener is not None:
+        glb.settings.disable_hearing()
+
+
 def handle_command(words: list[str]):
     """handles words as command."""
     command = words[0]
@@ -222,38 +227,20 @@ def handle_command(words: list[str]):
     elif command == c.CMD_CLEAR:
         clear()
     elif command == c.CMD_EXIT:
-        glb.settings.dump_to_cache()
-        if glb.listener is not None:
-            glb.settings.disable_hearing()
+        handle_exit()
 
 
-def run_loop():
-    """starts the REPL loop."""
-    readline.set_completer(command_completer)
-    readline.parse_and_bind("tab: complete")
-
-    glb.settings = Settings()
-    glb.settings.enact()
-    clear()
-    print_welcome()
-
-    while True:
-        try:
-            query = input(">> ")
-            if len(query.strip()) == 0:
-                continue
-            if is_command(query):
-                try:
-                    words = shlex.split(query)
-                    if command_exists(words[0]):
-                        handle_command(words)
-                        if words[0] == c.CMD_EXIT:
-                            break
-                    else:
-                        handle_misspell(words[0])
-                except ValueError:
-                    write("invalid command")
-            else:
-                handle_lm_response(lang_models.ask(query))
-        except KeyboardInterrupt:
-            write("\r", end="")
+def run_query(query: str):
+    if len(query.strip()) > 0:
+        if is_command(query):
+            try:
+                words = shlex.split(query)
+                cmd_word = words[0]
+                if command_exists(cmd_word):
+                    handle_command(words)
+                else:
+                    handle_misspell(cmd_word)
+            except ValueError:
+                write("invalid command")
+        else:
+            handle_lm_response(lm.ask(query))
