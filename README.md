@@ -18,8 +18,9 @@ I.S.A.A.C is a completely local, on-terminal AI assistant that lets you use Chat
 ### Available commands
 - `:toggle`- toggles features on/off.
 - - `:toggle speech` to toggle the assistant's speech.
-- - `:toggle context` to toggle the use of conversation history for coherent responses.
+- - `:toggle context` to toggle the use of conversation history for coherent responses, uses the last 5 or less user-assistant exchanges.
 - - `:toggle hearing` to toggle the assistant's ability to hear you.
+- - `NOTE: The textual input (REPL) is disabled when you enable hearing, so to run commands, you can either press ctrl + C and you'd be able to type one command or say one of the one-word commands like 'exit', 'status' etc and they will be processed as commands and not natural language text.`
 
 `NOTE: for interacting with the assistant only using your voice, turn on both speech and hearing.`
 
@@ -40,6 +41,15 @@ I.S.A.A.C is a completely local, on-terminal AI assistant that lets you use Chat
 - `:clear` to clear the terminal.
 - `:exit` to turn the assistant off.
 
+---
+### Features
+- [x] Free LLM APIs to process natural language queries.
+- [x] Voice-only conversations, assistant listens to you and speaks to you.
+- [x] Dozens of assistant voices and multiple options for the listening ability.
+- [x] Assistant mutes when user starts speaking
+- [x] Runs on both CPUs and GPUs.
+- [x] Commands to control the assistant's behavior and go back and forth between the shell and the assistant.
+- [x] Other utllity commands to clear the screen, show resource consumption etc.
 ---
 ### Tasks
 - [ ] add shell command execution using shebang, e.g. "!ls".
