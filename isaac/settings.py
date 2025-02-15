@@ -11,6 +11,7 @@ from isaac.types import SettingsInterface
 import isaac.speech as speech
 from yapper import PiperSpeaker
 import isaac.globals as glb
+import isaac.sync as sync
 
 
 whisper_options = [
@@ -179,9 +180,8 @@ class Settings(SettingsInterface):
         enables speech for the assistant so it can both prints and speaks its
         response.
         """
-        glb.speaker = PiperSpeaker(
-            get_piper_voice_enum(self.piper_voice), show_progress=False
-        )
+        with sync.stdout_lock:
+            glb.speaker = PiperSpeaker(get_piper_voice_enum(self.piper_voice))
         self.speech_enabled = True
 
     def disable_speech(self):
@@ -200,9 +200,8 @@ class Settings(SettingsInterface):
         if idx == -1:
             return
         if self.speech_enabled and self.piper_voice != voices[idx]:
-            glb.speaker = PiperSpeaker(
-                get_piper_voice_enum(voices[idx]), show_progress=False
-            )
+            with sync.stdout_lock:
+                glb.speaker = PiperSpeaker(get_piper_voice_enum(voices[idx]))
         self.piper_voice = voices[idx]
 
     def toggle_speech(self):
