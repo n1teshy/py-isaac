@@ -1,6 +1,7 @@
 import os
 import platform
 import re
+import socket
 from typing import Optional, Union
 
 from rich.console import Console, ConsoleOptions
@@ -132,6 +133,14 @@ def normalize_md(text: str) -> str:
     text = re.sub(r"\*\*(.*?)\*\*", r"\1", text)
     text = re.sub(r"\*(.*?)\*", r"\1", text)
     return text
+
+
+def check_internet():
+    try:
+        socket.getaddrinfo("google.com", 80)
+        return True
+    except OSError:
+        return False
 
 
 def handle_lm_response(response: str):

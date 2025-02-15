@@ -4,12 +4,9 @@ import requests
 
 import isaac.constants as c
 import isaac.globals as glb
+from isaac.utils import check_internet
 
 import re
-
-
-def append_history(query: str, answer: str):
-    glb.past_exchanges.append((query, answer))
 
 
 def ask_gemini(
@@ -126,22 +123,27 @@ def ask(query: str) -> Tuple[bool, str]:
         glb.settings.select_lm()
 
     exchanges = glb.past_exchanges if glb.settings.context_enabled else None
-    if glb.settings.response_generator == c.RSPNS_GNRTR_GEMINI:
-        response = ask_gemini(
-            glb.settings.gemini_model,
-            glb.settings.gemini_key,
-            query,
-            glb.settings.system_message,
-            exchanges,
-        )
-    else:
-        response = ask_groq(
-            glb.settings.groq_model,
-            glb.settings.groq_key,
-            query,
-            glb.settings.system_message,
-            exchanges,
-        )
+    try:
+        if glb.settings.response_generator == c.RSPNS_GNRTR_GEMINI:
+            response = ask_gemini(
+                glb.settings.gemini_model,
+                glb.settings.gemini_key,
+                query,
+                glb.settings.system_message,
+                exchanges,
+            )
+        else:
+            response = ask_groq(
+                glb.settings.groq_model,
+                glb.settings.groq_key,
+                query,
+                glb.settings.system_message,
+                exchanges,
+            )
+    except Exception:
+        if check_internet():
+            raise
+        response = c.MSG_NO_INTERNET
     post_ask(query, response)
     return response
 

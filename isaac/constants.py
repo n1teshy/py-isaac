@@ -77,6 +77,7 @@ FILE_SHELL = "powershell.exe" if os.name == "nt" else "/bin/sh"
 
 # messages
 MSG_LANG_MODEL_ERROR = "could not process that query, something went wrong"
+MSG_NO_INTERNET = "you seem to be offline, please check your internet connection"
 
 # commands
 CMD_SELECT = ":select"
