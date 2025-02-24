@@ -14,8 +14,8 @@ I.S.A.A.C is a completely local, on-terminal AI assistant that lets you use Chat
 - Paste the API key to the prompt.
 - Done.
 
-
 ### Available commands
+
 - `:toggle`- toggles features on/off.
 - - `:toggle speech` to toggle the assistant's speech.
 - - `:toggle context` to toggle the use of conversation history for coherent responses, uses the last 5 or less user-assistant exchanges.
@@ -31,7 +31,9 @@ I.S.A.A.C is a completely local, on-terminal AI assistant that lets you use Chat
 - - `:select lm` to select the model for generating responses.
 - - `:select voice` to select a [Piper](https://github.com/rhasspy/piper) text-to-speech model for the assistant to speak with.
 - - `:select whisper` to select a [Whisper](https://github.com/openai/whisper) speech-to-text model for the assistant to interpret your voice with.
+
 ---
+
 - `:key` sets the LLM API key for the selected provider, run this when the assistant can't process your queries, it means the key most proabably expired.
 - `:instruct` instructs the model to behave a certain way, using the [system message](https://promptmetheus.com/resources/llm-knowledge-base/system-message).
 - `:status` to see status, selected settings and resource consumption.
@@ -42,7 +44,9 @@ I.S.A.A.C is a completely local, on-terminal AI assistant that lets you use Chat
 - `:exit` to turn the assistant off.
 
 ---
+
 ### Features
+
 - [x] Free LLM APIs to process natural language queries.
 - [x] Voice-only conversations, assistant listens to you and speaks to you.
 - [x] Dozens of assistant voices and multiple options for the listening ability.
@@ -50,11 +54,15 @@ I.S.A.A.C is a completely local, on-terminal AI assistant that lets you use Chat
 - [x] Runs on both CPUs and GPUs.
 - [x] Commands to control the assistant's behavior and go back and forth between the shell and the assistant.
 - [x] Other utllity commands to clear the screen, show resource consumption etc.
+
 ---
+
 ### Tasks
+
 - [ ] add shell command execution using shebang, e.g. "!ls".
 - [ ] add ollama support, user should be able to choose locally running ollama API as language model provider.
 - [ ] User profiling, store general likes and dislikes, e.g. "concise answers", "a project they're working on" etc.
 
 ### Contributing
+
 If you don't know where to start, pick one of the pending tasks and start with that. If if you want to fix a bug or add other enhancements, please raise an issue first.
