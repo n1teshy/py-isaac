@@ -9,6 +9,7 @@ import platform
 import subprocess
 import isaac.constants as c
 import isaac.globals as glb
+import isaac.sync as sync
 import psutil
 import os
 import isaac.speech as speech
@@ -23,6 +24,10 @@ def is_command(text: str) -> bool:
     prints if the given text is a command, i.e. if it starts with a colon(:).
     """
     return text.startswith(":")
+
+
+def is_shell_command(text: str) -> bool:
+    return text.startswith("!")
 
 
 def command_exists(word: str) -> bool:
@@ -232,7 +237,10 @@ def handle_command(words: list[str]):
 
 def run_query(query: str):
     if len(query.strip()) > 0:
-        if is_command(query):
+        if is_shell_command(query):
+            with sync.stdout_lock:
+                subprocess.call(query[1:].lstrip(), shell=True)
+        elif is_command(query):
             try:
                 words = shlex.split(query)
                 cmd_word = words[0]

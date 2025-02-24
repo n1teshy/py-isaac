@@ -78,7 +78,7 @@ def main():
             if glb.event_exit.is_set():
                 return
             query = input("" if glb.settings.hearing_enabled else ">> ")
-            glb.query_queue.put((query, event_completion))
+            glb.query_queue.put((query.strip(), event_completion))
             event_completion.wait()
             if glb.event_exit.is_set():
                 return

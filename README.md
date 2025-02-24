@@ -34,11 +34,12 @@ I.S.A.A.C is a completely local, on-terminal AI assistant that lets you use Chat
 
 ---
 
+- `!<shell-command>` runs shell commands without launching a shell session, .e.g. `!ls`.
 - `:key` sets the LLM API key for the selected provider, run this when the assistant can't process your queries, it means the key most proabably expired.
 - `:instruct` instructs the model to behave a certain way, using the [system message](https://promptmetheus.com/resources/llm-knowledge-base/system-message).
 - `:status` to see status, selected settings and resource consumption.
 - `:mute` to mute the assistant while it's speaking.
-- `:cmd` to launch a shell session to run shell commands, run the `exit` command in the shell session to get back to the assistant.
+- `:cmd` to launch a shell session and pauses the assistant, `powershell` on windows and `/bin/sh` on linux, run the `exit` command in the shell session to get back to the assistant.
 - `:commands` to see all available commands.
 - `:clear` to clear the terminal.
 - `:exit` to turn the assistant off.
@@ -50,16 +51,16 @@ I.S.A.A.C is a completely local, on-terminal AI assistant that lets you use Chat
 - [x] Free LLM APIs to process natural language queries.
 - [x] Voice-only conversations, assistant listens to you and speaks to you.
 - [x] Dozens of assistant voices and multiple options for the listening ability.
+- [x] Runs shell commands using the '!' (bang) prefix.
 - [x] Assistant mutes when user starts speaking
 - [x] Runs on both CPUs and GPUs.
-- [x] Commands to control the assistant's behavior and go back and forth between the shell and the assistant.
+- [x] Commands to control the assistant's behavior.
 - [x] Other utllity commands to clear the screen, show resource consumption etc.
 
 ---
 
 ### Tasks
 
-- [ ] add shell command execution using shebang, e.g. "!ls".
 - [ ] add ollama support, user should be able to choose locally running ollama API as language model provider.
 - [ ] User profiling, store general likes and dislikes, e.g. "concise answers", "a project they're working on" etc.
 
