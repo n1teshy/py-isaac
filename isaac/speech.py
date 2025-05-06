@@ -28,6 +28,7 @@ def say(text: str):
                 file = temp.name
             try:
                 glb.speaker.text_to_wave(text, file)
+                pygame.mixer.init()
                 sound = pygame.mixer.Sound(file)
                 sound.play()
                 while pygame.mixer.get_busy():
