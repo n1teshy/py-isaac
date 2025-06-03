@@ -7,7 +7,7 @@ from typing import Optional, Union
 from rich.console import Console, ConsoleOptions
 from rich.markdown import Markdown
 from rich.segment import Segment
-from yapper import PiperVoiceUK, PiperVoiceUS
+from yapper import PiperVoiceGB, PiperVoiceUS
 
 import isaac.constants as c
 import isaac.globals as glb
@@ -64,12 +64,12 @@ def print_welcome():
     print(message)
 
 
-def get_piper_voice_enum(str_voice: str) -> Union[PiperVoiceUS, PiperVoiceUK]:
+def get_piper_voice_enum(str_voice: str) -> Union[PiperVoiceUS, PiperVoiceGB]:
     """
     takes stringified name of a piper voice and return the matching attribute
-    from enum `PiperVoiceUS` or `PiperVoiceUK`.
+    from enum `PiperVoiceUS` or `PiperVoiceGB`.
     """
-    for voice_enum in list(PiperVoiceUS) + list(PiperVoiceUK):
+    for voice_enum in list(PiperVoiceUS) + list(PiperVoiceGB):
         if voice_enum.value == str_voice:
             return voice_enum
 

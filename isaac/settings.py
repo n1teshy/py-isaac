@@ -3,7 +3,7 @@ import json
 import string
 import threading
 
-from yapper import GeminiModel, GroqModel, PiperVoiceUK, PiperVoiceUS
+from yapper import GeminiModel, GroqModel, PiperVoiceGB, PiperVoiceUS
 
 import isaac.constants as c
 from isaac.utils import select_from, write, get_piper_voice_enum, safe_input
@@ -194,7 +194,7 @@ class Settings(SettingsInterface):
         lets the user select a piper voice for the assistant to speak with
         """
         voices = [voice.value for voice in PiperVoiceUS] + [
-            voice.value for voice in PiperVoiceUK
+            voice.value for voice in PiperVoiceGB
         ]
         idx = select_from(voices, prompt="select a voice")
         if idx == -1:
