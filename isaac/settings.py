@@ -147,6 +147,7 @@ class Settings(SettingsInterface):
             options, prompt="select an LLM API provider", allow_none=False
         )
         self.response_generator = options[idx]
+        self.dump_to_cache()
         if self.lang_model is None:
             self.select_lm()
 
@@ -163,7 +164,7 @@ class Settings(SettingsInterface):
         options = (
             [model.value for model in GroqModel]
             if self.response_generator == c.RSPNS_GNRTR_GROQ
-            else list(GeminiModel)
+            else [model.value for model in GeminiModel]
         )
         idx = select_from(
             options, prompt="please select a language model", allow_none=False
@@ -172,6 +173,8 @@ class Settings(SettingsInterface):
             self.gemini_model = options[idx]
         else:
             self.groq_model = options[idx]
+
+        self.dump_to_cache()
 
         if (
             self.response_generator == c.RSPNS_GNRTR_GROQ
@@ -191,6 +194,7 @@ class Settings(SettingsInterface):
                 self.groq_key = key
             else:
                 self.gemini_key = key
+        self.dump_to_cache()
         safe_print()
 
     def instruct_lm(self):
@@ -198,9 +202,11 @@ class Settings(SettingsInterface):
         sets the system message to be used for querying the language
         model.
         """
-        message = safe_input("instruction: ")
-        if len(message.strip()) > 0:
-            self.system_message = message
+        message = safe_input("instruction: ").strip()
+        if len(message.strip()) == 0:
+            return
+        self.system_message = message
+        self.dump_to_cache()
 
     def toggle_context(self):
         """
@@ -208,6 +214,7 @@ class Settings(SettingsInterface):
         responses.
         """
         self.context_enabled = not self.context_enabled
+        self.dump_to_cache()
 
     def enable_speech(self):
         """
@@ -221,10 +228,12 @@ class Settings(SettingsInterface):
             )
         glb.speaker = PiperVoice.load(onnx_f, conf_f)
         self.speech_enabled = True
+        self.dump_to_cache()
 
     def disable_speech(self):
         """disables speech for the assistant."""
         self.speech_enabled = False
+        self.dump_to_cache()
 
     def select_voice(self):
         """
@@ -237,6 +246,7 @@ class Settings(SettingsInterface):
         if idx == -1:
             return
         self.piper_voice = voices[idx]
+        self.dump_to_cache()
         if self.speech_enabled and self.piper_voice != voices[idx]:
             with sync.stdout_lock:
                 voice = get_piper_voice_enum(self.piper_voice)
@@ -266,6 +276,7 @@ class Settings(SettingsInterface):
             prompt="please select a whisper model, large model means better accuracy",
         )
         self.whisper_size = whisper_options[idx]
+        self.dump_to_cache()
 
     def enable_hearing(self):
         """enables the assistant to hear user with py-listener."""
@@ -302,12 +313,14 @@ class Settings(SettingsInterface):
         )
         glb.listener.listen()
         self.hearing_enabled = True
+        self.dump_to_cache()
 
     def disable_hearing(self):
         """stops listening to user."""
         glb.listener.close()
         glb.listener = None
         self.hearing_enabled = False
+        self.dump_to_cache()
 
     def toggle_hearing(self):
         """toggles assistant's ability to hear user's speech."""
