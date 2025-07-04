@@ -277,6 +277,10 @@ class Settings(SettingsInterface):
         )
         self.whisper_size = whisper_options[idx]
         self.dump_to_cache()
+        if self.hearing_enabled:
+            # load the newly selected whisper model
+            self.disable_hearing()
+            self.enable_hearing()
 
     def enable_hearing(self):
         """enables the assistant to hear user with py-listener."""
