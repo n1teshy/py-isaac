@@ -16,7 +16,7 @@ from isaac.settings import Settings
 from isaac.utils import clear, safe_print, print_welcome
 
 
-def query_hadler():
+def query_handler():
     while not glb.event_exit.is_set():
         try:
             query, event = glb.query_queue.get(timeout=1)
@@ -62,7 +62,7 @@ def main():
     print_welcome()
     glb.settings = Settings()
     glb.settings.enact()
-    query_thread = threading.Thread(target=query_hadler)
+    query_thread = threading.Thread(target=query_handler)
     event_completion = threading.Event()
     query_thread.start()
 
