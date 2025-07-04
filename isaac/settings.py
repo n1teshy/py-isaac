@@ -1,3 +1,4 @@
+import os
 import re
 import json
 import string
@@ -49,6 +50,7 @@ class Settings(SettingsInterface):
     """
 
     def __init__(self):
+        self.ensure_file()
         cache = json.load(open(c.FILE_SETTINGS, encoding="utf-8"))
         self.groq_key = cache[c.STNG_FLD_GROQ][c.STNG_FLD_KEY]
         self.groq_model = cache[c.STNG_FLD_GROQ][c.STNG_FLD_MODEL]
@@ -74,6 +76,39 @@ class Settings(SettingsInterface):
         elif self.response_generator == c.RSPNS_GNRTR_GROQ:
             return self.groq_model
         return None
+
+    def ensure_file(self):
+        """ensures that the settings file exists, if not creates it with default values."""
+        if os.path.isfile(c.FILE_SETTINGS):
+            return
+
+        with open(c.FILE_SETTINGS, "w", encoding="utf-8") as f:
+            json.dump(
+                {
+                    c.STNG_FLD_GROQ: {
+                        c.STNG_FLD_KEY: None,
+                        c.STNG_FLD_MODEL: None,
+                    },
+                    c.STNG_FLD_GEMINI: {
+                        c.STNG_FLD_KEY: None,
+                        c.STNG_FLD_MODEL: None,
+                    },
+                    c.STNG_FLD_SPEECH: {
+                        c.STNG_FLD_IS_ENABLED: False,
+                        c.STNG_FLD_PIPER_VOICE: PiperVoiceUS.HFC_FEMALE.value,
+                    },
+                    c.STNG_FLD_HEARING: {
+                        c.STNG_FLD_IS_ENABLED: False,
+                        c.STNG_FLD_WHISPER_SIZE: "auto",
+                    },
+                    c.STNG_FLD_RSPNS_GENERATOR: None,
+                    c.STNG_FLD_SYS_MESSAGE: None,
+                    c.STNG_FLD_CONTEXT_ENABLED: True,
+                    c.STNG_FLD_SHELL: c.FILE_SHELL,
+                },
+                f,
+                indent=2,
+            )
 
     def dump_to_cache(self):
         """dumps settings to the default settings file."""
