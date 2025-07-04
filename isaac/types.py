@@ -19,11 +19,6 @@ class SettingsInterface(ABC):
     completion_tokens: int
 
 
-class SpeakerInteface(ABC):
-    @abstractmethod
-    def text_to_wave(self, text: str, file: str): ...
-
-
 class ListenerInterface(ABC):
     @abstractmethod
     def listen(self): ...

@@ -1,13 +1,12 @@
-import os
-import tempfile
 import threading
-
+import sounddevice as sd
 
 import isaac.globals as glb
 import isaac.sync as sync
+import numpy as np
 
-os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
-import pygame
+PIPER_SAMPLE_RATE = 22050
+PIPER_NUM_CHANNELS = 1
 
 
 def mute():
@@ -23,20 +22,14 @@ def say(text: str):
 
     def say_in_thread(text: str):
         sync.event_mute.clear()
-        with sync.speech_lock:
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp:
-                file = temp.name
-            try:
-                glb.speaker.text_to_wave(text, file)
-                pygame.mixer.init()
-                sound = pygame.mixer.Sound(file)
-                sound.play()
-                while pygame.mixer.get_busy():
+
+        with sd.OutputStream(
+            samplerate=PIPER_SAMPLE_RATE, channels=PIPER_NUM_CHANNELS, dtype="int16"
+        ) as stream:
+            with sync.speech_lock:
+                for audio_bytes in glb.speaker.synthesize_stream_raw(text):
                     if sync.event_mute.is_set():
-                        sound.stop()
                         break
-                    pygame.time.wait(100)
-            finally:
-                os.remove(file)
+                    stream.write(np.frombuffer(audio_bytes, dtype=np.int16))
 
     threading.Thread(target=say_in_thread, args=(text,)).start()

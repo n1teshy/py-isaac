@@ -10,9 +10,11 @@ import isaac.constants as c
 from isaac.utils import select_from, write, get_piper_voice_enum, safe_input
 from isaac.types import SettingsInterface
 import isaac.speech as speech
-from yapper import PiperSpeaker
 import isaac.globals as glb
 import isaac.sync as sync
+from yapper.utils import download_piper_model
+from yapper.constants import piper_voice_quality_map
+from piper.voice import PiperVoice
 
 
 whisper_options = [
@@ -216,12 +218,15 @@ class Settings(SettingsInterface):
         response.
         """
         with sync.stdout_lock:
-            glb.speaker = PiperSpeaker(get_piper_voice_enum(self.piper_voice))
+            voice = get_piper_voice_enum(self.piper_voice)
+            onnx_f, conf_f = download_piper_model(
+                voice, piper_voice_quality_map[voice], True
+            )
+        glb.speaker = PiperVoice.load(onnx_f, conf_f)
         self.speech_enabled = True
 
     def disable_speech(self):
         """disables speech for the assistant."""
-        glb.speaker = None
         self.speech_enabled = False
 
     def select_voice(self):
@@ -234,10 +239,14 @@ class Settings(SettingsInterface):
         idx = select_from(voices, prompt="select a voice")
         if idx == -1:
             return
+        self.piper_voice = voices[idx]
         if self.speech_enabled and self.piper_voice != voices[idx]:
             with sync.stdout_lock:
-                glb.speaker = PiperSpeaker(get_piper_voice_enum(voices[idx]))
-        self.piper_voice = voices[idx]
+                voice = get_piper_voice_enum(self.piper_voice)
+                onnx_f, conf_f = download_piper_model(
+                    voice, piper_voice_quality_map[voice], True
+                )
+            glb.speaker = PiperVoice.load(onnx_f, conf_f)
 
     def toggle_speech(self):
         """toggles the assistant's ability to speak."""
