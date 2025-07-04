@@ -247,7 +247,7 @@ class Settings(SettingsInterface):
             return
         self.piper_voice = voices[idx]
         self.dump_to_cache()
-        if self.speech_enabled and self.piper_voice != voices[idx]:
+        if self.speech_enabled:
             with sync.stdout_lock:
                 voice = get_piper_voice_enum(self.piper_voice)
                 onnx_f, conf_f = download_piper_model(
