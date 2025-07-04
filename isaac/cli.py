@@ -13,7 +13,7 @@ import isaac.constants as c
 import isaac.command as command
 import isaac.globals as glb
 from isaac.settings import Settings
-from isaac.utils import clear, write, print_welcome
+from isaac.utils import clear, safe_print, print_welcome
 
 
 def query_hadler():
@@ -69,7 +69,7 @@ def main():
     while True:
         try:
             if glb.settings.hearing_enabled:
-                write(">> ", end="")
+                safe_print(">> ", end="")
             while glb.settings.hearing_enabled:
                 try:
                     time.sleep(1)
@@ -84,4 +84,4 @@ def main():
                 return
             event_completion.clear()
         except KeyboardInterrupt:
-            write("\r", end="")
+            safe_print("\r", end="")

@@ -18,6 +18,9 @@ import isaac.theme as theme
 rich_console = Console()
 
 
+# --- general ---
+
+
 def clear():
     """
     clears the screen.
@@ -25,7 +28,7 @@ def clear():
     os.system("cls" if platform.system() == "Windows" else "clear")
 
 
-def write(*args, **kwargs):
+def safe_print(*args, **kwargs):
     """
     prints the given text on the screen with a lock that prevents
     the listener thread from interrupting it.
@@ -64,16 +67,6 @@ def print_welcome():
     print(message)
 
 
-def get_piper_voice_enum(str_voice: str) -> Union[PiperVoiceUS, PiperVoiceGB]:
-    """
-    takes stringified name of a piper voice and return the matching attribute
-    from enum `PiperVoiceUS` or `PiperVoiceGB`.
-    """
-    for voice_enum in list(PiperVoiceUS) + list(PiperVoiceGB):
-        if voice_enum.value == str_voice:
-            return voice_enum
-
-
 def safe_input(message: str) -> str:
     try:
         if glb.listener is not None:
@@ -99,8 +92,8 @@ def select_from(
         options += [none_label]
     options = [f"{idx}: {option}" for idx, option in enumerate(options)]
     if prompt is not None:
-        write(theme.BOLD_BRIGHT + prompt + theme.RESET)
-    write("\n".join(options))
+        safe_print(theme.BOLD_BRIGHT + prompt + theme.RESET)
+    safe_print("\n".join(options))
     while True:
         idx = safe_input("select by typing the index: ").strip()
         try:
@@ -108,12 +101,33 @@ def select_from(
             if idx >= len(options):
                 raise ValueError()
         except ValueError:
-            write("invalid option")
+            safe_print("invalid option")
             continue
         if allow_none and idx == len(options) - 1:
             return -1
-        write()
+        safe_print()
         return idx
+
+
+def check_internet():
+    try:
+        socket.getaddrinfo("google.com", 80)
+        return True
+    except OSError:
+        return False
+
+
+# --- speech ---
+
+
+def get_piper_voice_enum(str_voice: str) -> Union[PiperVoiceUS, PiperVoiceGB]:
+    """
+    takes stringified name of a piper voice and return the matching attribute
+    from enum `PiperVoiceUS` or `PiperVoiceGB`.
+    """
+    for voice_enum in list(PiperVoiceUS) + list(PiperVoiceGB):
+        if voice_enum.value == str_voice:
+            return voice_enum
 
 
 def normalize_md(text: str) -> str:
@@ -135,14 +149,6 @@ def normalize_md(text: str) -> str:
     return text
 
 
-def check_internet():
-    try:
-        socket.getaddrinfo("google.com", 80)
-        return True
-    except OSError:
-        return False
-
-
 def handle_lm_response(response: str):
     """
     prints the response on the screen, normalizes and speaks it.
@@ -151,6 +157,9 @@ def handle_lm_response(response: str):
         rich_console.print(CustomMarkdown(response))
     if glb.settings.speech_enabled:
         speech.say(normalize_md(response))
+
+
+# --- presentation ---
 
 
 class CustomMarkdown(Markdown):

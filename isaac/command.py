@@ -14,7 +14,7 @@ import psutil
 import os
 import isaac.speech as speech
 from isaac.theme import BOLD_BRIGHT, BRIGHT, RESET
-from isaac.utils import clear, write, label_switch, handle_lm_response
+from isaac.utils import clear, safe_print, label_switch, handle_lm_response
 import isaac.lang_models as lm
 from difflib import SequenceMatcher
 
@@ -47,7 +47,7 @@ def handle_misspell(word: str) -> str:
         )
 
     similar = max(c.commands, key=key)
-    write(f"command not found, did you mean '{similar}'?")
+    safe_print(f"command not found, did you mean '{similar}'?")
 
 
 def command_completer(text: str, state: int) -> Optional[str]:
@@ -74,15 +74,15 @@ def command_completer(text: str, state: int) -> Optional[str]:
 def handle_select(args: list[str]):
     """handles the ':select' command."""
     if len(args) > 1:
-        write(":select only takes one argument")
+        safe_print(":select only takes one argument")
         return
     elif len(args) == 0:
-        write(":select needs an argument")
+        safe_print(":select needs an argument")
         return
 
     arg = args[0]
     if arg not in c.selectables:
-        write(f"invalid argument {arg}, must be one of {c.selectables}")
+        safe_print(f"invalid argument {arg}, must be one of {c.selectables}")
         return
 
     if arg == c.SELECTABLE_LM_PROVIDER:
@@ -98,15 +98,15 @@ def handle_select(args: list[str]):
 def handle_toggle(args: list[str]):
     """handles the ':toggle' command."""
     if len(args) > 1:
-        write(":toggle only takes one argument")
+        safe_print(":toggle only takes one argument")
         return
     elif len(args) == 0:
-        write(":toggle needs an argument")
+        safe_print(":toggle needs an argument")
         return
 
     arg = args[0]
     if arg not in c.togglables:
-        write(f"invalid argument {arg}, argument must be one of {c.togglables}")
+        safe_print(f"invalid argument {arg}, argument must be one of {c.togglables}")
         return
 
     if arg == c.TOGGLABLE_SPEECH:
@@ -163,7 +163,7 @@ def display_status():
         "  %scompletion tokens:%s %s" % (BRIGHT, RESET, settings.completion_tokens),
         "  %smemory:%s %.2f%%" % (BRIGHT, RESET, mem_per),
     ]
-    write("\n".join(lines))
+    safe_print("\n".join(lines))
 
 
 def display_commands():
@@ -200,7 +200,7 @@ def display_commands():
         "%s%s%s to clear the terminal" % (BOLD_BRIGHT, c.CMD_CLEAR, RESET),
         "%s%s%s to exit" % (BOLD_BRIGHT, c.CMD_EXIT, RESET),
     ]
-    write("\n".join(lines))
+    safe_print("\n".join(lines))
 
 
 def handle_exit():
@@ -249,6 +249,6 @@ def run_query(query: str):
                 else:
                     handle_misspell(cmd_word)
             except ValueError:
-                write("invalid command")
+                safe_print("invalid command")
         else:
             handle_lm_response(lm.ask(query))

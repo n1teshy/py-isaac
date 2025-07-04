@@ -7,7 +7,7 @@ import threading
 from yapper import GeminiModel, GroqModel, PiperVoiceGB, PiperVoiceUS
 
 import isaac.constants as c
-from isaac.utils import select_from, write, get_piper_voice_enum, safe_input
+from isaac.utils import select_from, safe_print, get_piper_voice_enum, safe_input
 from isaac.types import SettingsInterface
 import isaac.speech as speech
 import isaac.globals as glb
@@ -146,8 +146,7 @@ class Settings(SettingsInterface):
         idx = select_from(
             options, prompt="select an LLM API provider", allow_none=False
         )
-        if idx != -1:
-            self.response_generator = options[idx]
+        self.response_generator = options[idx]
         if self.lang_model is None:
             self.select_lm()
 
@@ -169,8 +168,6 @@ class Settings(SettingsInterface):
         idx = select_from(
             options, prompt="please select a language model", allow_none=False
         )
-        if idx == -1:
-            return
         if provider == c.RSPNS_GNRTR_GEMINI:
             self.gemini_model = options[idx]
         else:
@@ -194,7 +191,7 @@ class Settings(SettingsInterface):
                 self.groq_key = key
             else:
                 self.gemini_key = key
-        write()
+        safe_print()
 
     def instruct_lm(self):
         """
@@ -288,11 +285,11 @@ class Settings(SettingsInterface):
                 candidate = ":" + candidate.lower()
                 if candidate in c.commands:
                     query = candidate
-            write(re.sub(r"\n+", ";", query))
+            safe_print(re.sub(r"\n+", ";", query))
             glb.query_queue.put((query, event_completion))
             event_completion.wait()
             if not glb.event_exit.is_set():
-                write(">> ", end="")
+                safe_print(">> ", end="")
                 event_completion.clear()
 
         glb.listener = Listener(
