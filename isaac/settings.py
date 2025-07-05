@@ -3,6 +3,7 @@ import re
 import json
 import string
 import threading
+import getpass
 
 from yapper import GeminiModel, GroqModel, PiperVoiceGB, PiperVoiceUS
 
@@ -11,7 +12,6 @@ from isaac.utils import (
     select_from,
     safe_print,
     get_piper_voice_enum,
-    safe_input,
     launch_text_editor,
 )
 from isaac.types import SettingsInterface
@@ -194,12 +194,18 @@ class Settings(SettingsInterface):
         """sets the key for the currently selected language model provider."""
         if self.response_generator is None:
             self.select_lm()
-        key = safe_input(f"please enter your {self.response_generator} key: ").strip()
-        if len(key) > 0:
+        while True:
+            key = getpass.getpass(
+                f"please enter your {self.response_generator} key: "
+            ).strip()
+            if len(key) == 0:
+                safe_print("invalid key")
+                continue
             if self.response_generator == c.RSPNS_GNRTR_GROQ:
                 self.groq_key = key
             else:
                 self.gemini_key = key
+            break
         self.dump_to_cache()
         safe_print()
 
