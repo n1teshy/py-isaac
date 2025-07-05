@@ -20,11 +20,12 @@ setup(
     url=GITHUB,
     packages=find_packages(),
     install_requires=[
+        "sounddevice" "py-listener",
         "yapper-tts",
-        "pyreadline3; sys_platform == 'win32'",
-        "py-listener",
         "psutil",
+        "numpy",
         "rich",
+        "pyreadline3; sys_platform == 'win32'",
     ],
     include_package_data=True,
     classifiers=[
