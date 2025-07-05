@@ -59,7 +59,7 @@ def print_welcome():
  | |  \___ \   / _ \     / _ \  | |
  | | _ ___) | / ___ \ _ / ___ \ | |___
 |___(_)____(_)_/   \_(_)_/   \_(_)____|%s"""
-    message = banner + "   type %s%s%s to see commands.\n"
+    message = banner + "   type %s%s%s to see commands." + "\n"
     message = message % (
         theme.BRIGHT,
         theme.RESET,
@@ -162,7 +162,7 @@ def normalize_md(text: str) -> str:
     """
 
     def replacer(match):
-        match = re.search("```(\w+).*", text)
+        match = re.search(r"```(\w+).*", text)
         repl = match.group(1) if match else "the code"
         return f"you can see {repl} on the screen. "
 

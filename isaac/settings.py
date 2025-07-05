@@ -307,7 +307,7 @@ class Settings(SettingsInterface):
             # print voice transcription on the console so
             # the user may know what the assistant interprets
             query = " ".join(query).strip()
-            if re.search("\w+", query) is None:
+            if re.search(r"\w+", query) is None:
                 return
             splits = query.split(" ")
             if len(splits) == 1:
