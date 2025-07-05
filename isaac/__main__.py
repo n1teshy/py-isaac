@@ -1,10 +1,9 @@
 from importlib.util import find_spec
+import sys
 
 
-if __name__ == "__main__":
+def main():
     if find_spec("piper") is None:
-        import sys
-
         print(
             (
                 "please ensure piper-tts is installed, "
@@ -15,6 +14,10 @@ if __name__ == "__main__":
         )
         sys.exit(1)
 
-    from isaac.cli import main
+    from isaac.cli import main as cli_main
 
+    cli_main()
+
+
+if __name__ == "__main__":
     main()

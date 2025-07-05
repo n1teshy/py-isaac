@@ -17,10 +17,12 @@ setup(
     description="Cooles locally run AI assistant",
     long_description=long_description,
     long_description_content_type="text/markdown",
+    license="GPL-3.0-or-later",
     url=GITHUB,
     packages=find_packages(),
     install_requires=[
-        "sounddevice" "py-listener",
+        "sounddevice",
+        "py-listener",
         "yapper-tts",
         "psutil",
         "numpy",
@@ -32,11 +34,10 @@ setup(
         "Intended Audience :: Developers",
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
-        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     ],
     entry_points={
         "console_scripts": [
-            "isaac=isaac.cli:main",
+            "isaac=isaac.__main__:main",
         ],
     },
     platforms="Posix; Windows",
