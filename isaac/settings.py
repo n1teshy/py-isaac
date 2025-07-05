@@ -7,7 +7,13 @@ import threading
 from yapper import GeminiModel, GroqModel, PiperVoiceGB, PiperVoiceUS
 
 import isaac.constants as c
-from isaac.utils import select_from, safe_print, get_piper_voice_enum, safe_input
+from isaac.utils import (
+    select_from,
+    safe_print,
+    get_piper_voice_enum,
+    safe_input,
+    launch_text_editor,
+)
 from isaac.types import SettingsInterface
 import isaac.speech as speech
 import isaac.globals as glb
@@ -202,9 +208,12 @@ class Settings(SettingsInterface):
         sets the system message to be used for querying the language
         model.
         """
-        message = safe_input("instruction: ").strip()
-        if len(message.strip()) == 0:
-            return
+        while True:
+            message = launch_text_editor(self.system_message)
+            if len(message.strip()) == 0:
+                safe_print("empty instruction")
+                continue
+            break
         self.system_message = message
         self.dump_to_cache()
 

@@ -1,4 +1,7 @@
 import os
+import sys
+import tempfile
+import subprocess
 import platform
 import re
 import socket
@@ -115,6 +118,27 @@ def check_internet():
         return True
     except OSError:
         return False
+
+
+def launch_text_editor(initial: Optional[str] = None) -> str:
+    with tempfile.NamedTemporaryFile(mode="w+", delete=False, suffix=".txt") as tf:
+        if initial is not None:
+            tf.write(initial)
+        filename = tf.name
+
+    if sys.platform.startswith("win"):
+        editor = "notepad"
+    elif os.system("which nano > /dev/null 2>&1") == 0:
+        editor = "nano"
+    else:
+        editor = "vi"
+
+    subprocess.call([editor, filename])
+    with open(filename, "r") as f:
+        content = f.read()
+
+    os.unlink(filename)
+    return content
 
 
 # --- speech ---
