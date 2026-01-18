@@ -1,10 +1,10 @@
 import os
-import sys
-import tempfile
-import subprocess
 import platform
 import re
 import socket
+import subprocess
+import sys
+import tempfile
 from typing import Optional, Union
 
 from rich.console import Console, ConsoleOptions
@@ -14,7 +14,6 @@ from yapper import PiperVoiceGB, PiperVoiceUS
 
 import isaac.constants as c
 import isaac.globals as glb
-import isaac.speech as speech
 import isaac.sync as sync
 import isaac.theme as theme
 
@@ -121,7 +120,9 @@ def check_internet():
 
 
 def launch_text_editor(initial: Optional[str] = None) -> str:
-    with tempfile.NamedTemporaryFile(mode="w+", delete=False, suffix=".txt") as tf:
+    with tempfile.NamedTemporaryFile(
+        mode="w+", delete=False, suffix=".txt"
+    ) as tf:
         if initial is not None:
             tf.write(initial)
         filename = tf.name
@@ -180,7 +181,7 @@ def handle_lm_response(response: str):
     with sync.stdout_lock:
         rich_console.print(CustomMarkdown(response))
     if glb.settings.speech_enabled:
-        speech.say(normalize_md(response))
+        glb.speaker.say_in_thread(normalize_md(response))
 
 
 # --- presentation ---
@@ -222,9 +223,13 @@ class CustomMarkdown(Markdown):
             if row[0].text == " ":
                 rows[row_idx] = row = row[1:]
             else:
-                segment = Segment(row[0].text[1:], row[0].style, row[0].control)
+                segment = Segment(
+                    row[0].text[1:], row[0].style, row[0].control
+                )
                 rows[row_idx][0] = row[0] = segment
-            rows[row_idx] = row[:-1] + [Segment(" ", style=bg_style)] + [row[-1]]
+            rows[row_idx] = (
+                row[:-1] + [Segment(" ", style=bg_style)] + [row[-1]]
+            )
 
         for segment in [s for row in rows for s in row]:
             yield segment

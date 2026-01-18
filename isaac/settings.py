@@ -5,15 +5,15 @@ import re
 import string
 import threading
 
-from piper.voice import PiperVoice
 from yapper import GeminiModel, GroqModel, PiperVoiceGB, PiperVoiceUS
 from yapper.constants import piper_voice_quality_map
 from yapper.utils import download_piper_model
 
 import isaac.constants as c
 import isaac.globals as glb
-import isaac.speech as speech
 import isaac.sync as sync
+from isaac.speakers.piper import PiperSpeaker
+from isaac.speakers.utils import mute
 from isaac.types import SettingsInterface
 from isaac.utils import (
     get_piper_voice_enum,
@@ -85,7 +85,10 @@ class Settings(SettingsInterface):
         return None
 
     def ensure_file(self):
-        """ensures that the settings file exists, if not creates it with default values."""
+        """
+        ensures that the settings file exists, if not creates it
+        with default values.
+        """
         if os.path.isfile(c.FILE_SETTINGS):
             return
 
@@ -242,7 +245,7 @@ class Settings(SettingsInterface):
             onnx_f, conf_f = download_piper_model(
                 voice, piper_voice_quality_map[voice], True
             )
-        glb.speaker = PiperVoice.load(onnx_f, conf_f)
+        glb.speaker = PiperSpeaker(onnx_f, conf_f)
         self.speech_enabled = True
         self.dump_to_cache()
 
@@ -285,7 +288,10 @@ class Settings(SettingsInterface):
         ]
         idx = select_from(
             display_options,
-            prompt="please select a whisper model, large model means better accuracy",
+            prompt=(
+                "please select a whisper model, "
+                "large model means better accuracy"
+            ),
         )
         self.whisper_size = whisper_options[idx]
         self.dump_to_cache()
@@ -324,7 +330,7 @@ class Settings(SettingsInterface):
         glb.listener = Listener(
             time_window=3,
             speech_handler=handle_speech,
-            on_speech_start=speech.mute,
+            on_speech_start=mute,
             whisper_size=self.whisper_size,
             en_only=True,
             # show_download=False

@@ -1,12 +1,12 @@
-import threading
 import queue
-from isaac.types import SettingsInterface, ListenerInterface
+import threading
 from typing import Optional
-from piper.voice import PiperVoice
 
+from isaac.speakers import SpeakerInterface
+from isaac.types import ListenerInterface, SettingsInterface
 
 settings: Optional[SettingsInterface] = None
-speaker: Optional[PiperVoice] = None
+speaker: Optional[SpeakerInterface] = None
 listener: Optional[ListenerInterface] = None
 query_queue = queue.Queue()
 event_exit = threading.Event()
