@@ -3,7 +3,9 @@ repos:
     rev: v0.7.1
     hooks:
       - id: ruff
-        args: [--fix, --select=I, E501, --line-length=79]
+        args:
+          - --fix
+          - "--select=I,F401"
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
