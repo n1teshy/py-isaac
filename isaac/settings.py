@@ -1,27 +1,26 @@
+import getpass
+import json
 import os
 import re
-import json
 import string
 import threading
-import getpass
 
+from piper.voice import PiperVoice
 from yapper import GeminiModel, GroqModel, PiperVoiceGB, PiperVoiceUS
+from yapper.constants import piper_voice_quality_map
+from yapper.utils import download_piper_model
 
 import isaac.constants as c
+import isaac.globals as glb
+import isaac.speech as speech
+import isaac.sync as sync
+from isaac.types import SettingsInterface
 from isaac.utils import (
-    select_from,
-    safe_print,
     get_piper_voice_enum,
     launch_text_editor,
+    safe_print,
+    select_from,
 )
-from isaac.types import SettingsInterface
-import isaac.speech as speech
-import isaac.globals as glb
-import isaac.sync as sync
-from yapper.utils import download_piper_model
-from yapper.constants import piper_voice_quality_map
-from piper.voice import PiperVoice
-
 
 whisper_options = [
     "tiny",
@@ -141,7 +140,9 @@ class Settings(SettingsInterface):
         cache[c.STNG_FLD_SYS_MESSAGE] = self.system_message
         cache[c.STNG_FLD_CONTEXT_ENABLED] = self.context_enabled
         cache[c.STNG_FLD_SHELL] = self.shell
-        json.dump(cache, open(c.FILE_SETTINGS, "w", encoding="utf-8"), indent=2)
+        json.dump(
+            cache, open(c.FILE_SETTINGS, "w", encoding="utf-8"), indent=2
+        )
 
     def select_lm_provider(self):
         """
@@ -261,14 +262,10 @@ class Settings(SettingsInterface):
         if idx == -1:
             return
         self.piper_voice = voices[idx]
-        self.dump_to_cache()
-        if self.speech_enabled:
-            with sync.stdout_lock:
-                voice = get_piper_voice_enum(self.piper_voice)
-                onnx_f, conf_f = download_piper_model(
-                    voice, piper_voice_quality_map[voice], True
-                )
-            glb.speaker = PiperVoice.load(onnx_f, conf_f)
+        if not self.speech_enabled:
+            self.dump_to_cache()
+        else:
+            self.enable_speech()
 
     def toggle_speech(self):
         """toggles the assistant's ability to speak."""
@@ -311,7 +308,9 @@ class Settings(SettingsInterface):
                 return
             splits = query.split(" ")
             if len(splits) == 1:
-                candidate = "".join(c for c in splits[0] if c not in string.punctuation)
+                candidate = "".join(
+                    c for c in splits[0] if c not in string.punctuation
+                )
                 candidate = ":" + candidate.lower()
                 if candidate in c.commands:
                     query = candidate
