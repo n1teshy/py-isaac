@@ -12,6 +12,7 @@ from yapper.utils import download_piper_model
 import isaac.constants as c
 import isaac.globals as glb
 import isaac.sync as sync
+from isaac.listeners.py_listener import ListenOptions, PyListener
 from isaac.speakers.piper import PiperSpeaker
 from isaac.speakers.utils import mute
 from isaac.types import SettingsInterface
@@ -302,8 +303,6 @@ class Settings(SettingsInterface):
 
     def enable_hearing(self):
         """enables the assistant to hear user with py-listener."""
-        from listener import Listener
-
         event_completion = threading.Event()
 
         def handle_speech(query: list[str]):
@@ -327,13 +326,9 @@ class Settings(SettingsInterface):
                 safe_print(">> ", end="")
                 event_completion.clear()
 
-        glb.listener = Listener(
-            time_window=3,
-            speech_handler=handle_speech,
-            on_speech_start=mute,
-            whisper_size=self.whisper_size,
-            en_only=True,
-            # show_download=False
+        glb.listener = PyListener(
+            self.whisper_size,
+            ListenOptions(speech_handler=handle_speech, on_speech_start=mute),
         )
         glb.listener.listen()
         self.hearing_enabled = True
