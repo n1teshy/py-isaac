@@ -1,7 +1,7 @@
-import time
-import shlex
 import queue
+import shlex
 import threading
+import time
 
 try:
     import readline
@@ -9,11 +9,12 @@ except ImportError:
     import pyreadline3 as readline
 
 from typing import Optional
-import isaac.constants as c
+
 import isaac.command as command
+import isaac.constants as c
 import isaac.globals as glb
 from isaac.settings import Settings
-from isaac.utils import clear, safe_print, print_welcome
+from isaac.utils import clear, print_welcome, safe_print
 
 
 def query_handler():
@@ -49,12 +50,21 @@ def command_completer(text: str, state: int) -> Optional[str]:
     if cmd_word not in c.command_args:
         return
     arg = words[1] if len(words) == 2 else ""
-    options = [option for option in c.command_args[cmd_word] if option.startswith(arg)]
+    options = [
+        option for option in c.command_args[cmd_word] if option.startswith(arg)
+    ]
     return options[state] if state < len(options) else None
 
 
 def main():
     """starts the REPL loop."""
+    try:
+        delims = readline.get_completer_delims().replace(":", "")
+        readline.set_completer_delims(delims)
+    except AttributeError:
+        # might fail on windows
+        pass
+
     readline.set_completer(command_completer)
     readline.parse_and_bind("tab: complete")
 
