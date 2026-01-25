@@ -2,7 +2,7 @@
 # piper-tts==1.2.0
 sounddevice
 py-listener
-yapper-tts
+yapper-tts==0.7.2
 psutil
 numpy
 rich
