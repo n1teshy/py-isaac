@@ -13,10 +13,10 @@ import psutil
 
 import isaac.constants as c
 import isaac.globals as glb
-import isaac.lang_models as lm
 import isaac.sync as sync
 from isaac.speakers.utils import mute
 from isaac.theme import BOLD_BRIGHT, BRIGHT, RESET
+from isaac.thinkers.utils import post_query, pre_query
 from isaac.utils import clear, handle_lm_response, label_switch, safe_print
 
 
@@ -264,4 +264,7 @@ def run_query(query: str):
             except ValueError:
                 safe_print("invalid command")
         else:
-            handle_lm_response(lm.ask(query))
+            pre_query()
+            answer = glb.thinker.think(query)
+            handle_lm_response(answer)
+            post_query(query, answer)

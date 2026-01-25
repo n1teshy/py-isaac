@@ -15,6 +15,9 @@ import isaac.sync as sync
 from isaac.listeners.py_listener import ListenOptions, PyListener
 from isaac.speakers.piper import PiperSpeaker
 from isaac.speakers.utils import mute
+from isaac.thinkers import ThinkerConfig
+from isaac.thinkers.gemini import GeminiThinker
+from isaac.thinkers.groq import GroqThinker
 from isaac.types import SettingsInterface
 from isaac.utils import (
     get_piper_voice_enum,
@@ -81,9 +84,7 @@ class Settings(SettingsInterface):
     def lang_model(self):
         if self.response_generator == c.RSPNS_GNRTR_GEMINI:
             return self.gemini_model
-        elif self.response_generator == c.RSPNS_GNRTR_GROQ:
-            return self.groq_model
-        return None
+        return self.groq_model
 
     def ensure_file(self):
         """
@@ -161,6 +162,7 @@ class Settings(SettingsInterface):
         self.dump_to_cache()
         if self.lang_model is None:
             self.select_lm()
+        self.initialize_thinker()
 
     def select_lm(self):
         """
@@ -169,9 +171,7 @@ class Settings(SettingsInterface):
         """
         if self.response_generator is None:
             self.select_lm_provider()
-        provider = self.response_generator
-        if provider is None:
-            return
+
         options = (
             [model.value for model in GroqModel]
             if self.response_generator == c.RSPNS_GNRTR_GROQ
@@ -180,20 +180,17 @@ class Settings(SettingsInterface):
         idx = select_from(
             options, prompt="please select a language model", allow_none=False
         )
-        if provider == c.RSPNS_GNRTR_GEMINI:
+        if self.response_generator == c.RSPNS_GNRTR_GEMINI:
             self.gemini_model = options[idx]
+            if self.gemini_key is None:
+                self.set_key()
         else:
             self.groq_model = options[idx]
+            if self.groq_key is None:
+                self.set_key()
 
+        self.initialize_thinker()
         self.dump_to_cache()
-
-        if (
-            self.response_generator == c.RSPNS_GNRTR_GROQ
-            and self.groq_key is None
-            or self.response_generator == c.RSPNS_GNRTR_GEMINI
-            and self.gemini_key is None
-        ):
-            self.set_key()
 
     def set_key(self):
         """sets the key for the currently selected language model provider."""
@@ -226,6 +223,7 @@ class Settings(SettingsInterface):
                 continue
             break
         self.system_message = message
+        self.initialize_thinker()
         self.dump_to_cache()
 
     def toggle_context(self):
@@ -348,9 +346,22 @@ class Settings(SettingsInterface):
         else:
             self.enable_hearing()
 
+    def initialize_thinker(self):
+        if self.response_generator == c.RSPNS_GNRTR_GEMINI:
+            config = ThinkerConfig(
+                self.gemini_model, self.gemini_key, self.system_message
+            )
+            glb.thinker = GeminiThinker(config)
+        else:
+            config = ThinkerConfig(
+                self.groq_model, self.groq_key, self.system_message
+            )
+            glb.thinker = GroqThinker(config)
+
     def enact(self):
         """brings the settings into action."""
-        if self.speech_enabled:
-            self.enable_speech()
         if self.hearing_enabled:
             self.enable_hearing()
+        self.initialize_thinker()
+        if self.speech_enabled:
+            self.enable_speech()

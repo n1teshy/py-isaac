@@ -1,6 +1,6 @@
 import os
-import sys
 import os.path as path
+import sys
 
 import isaac.meta as meta
 
@@ -14,6 +14,7 @@ GMNI_FLD_CANDIDATES = "candidates"
 GMNI_FLD_TEXT = "text"
 GMNI_FLD_USAGE = "usageMetadata"
 GMNI_FLD_ERROR = "error"
+GMNI_FLD_MESSAGE = "message"
 
 GMNI_USG_PROMPT = "promptTokenCount"
 GMNI_USG_COMPLETION = "candidatesTokenCount"
@@ -77,7 +78,9 @@ FILE_SHELL = "powershell.exe" if os.name == "nt" else "/bin/sh"
 
 # messages
 MSG_LANG_MODEL_ERROR = "could not process that query, something went wrong"
-MSG_NO_INTERNET = "you seem to be offline, please check your internet connection"
+MSG_NO_INTERNET = (
+    "you seem to be offline, please check your internet connection"
+)
 
 # commands
 CMD_SELECT = ":select"

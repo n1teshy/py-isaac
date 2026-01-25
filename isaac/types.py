@@ -1,5 +1,5 @@
-from typing import Optional, Literal
-from abc import ABC, abstractmethod
+from abc import ABC
+from typing import Literal, Optional
 
 
 class SettingsInterface(ABC):
@@ -17,17 +17,3 @@ class SettingsInterface(ABC):
     shell: str
     prompt_tokens: int
     completion_tokens: int
-
-
-class ListenerInterface(ABC):
-    @abstractmethod
-    def listen(self): ...
-
-    @abstractmethod
-    def close(self): ...
-
-    @abstractmethod
-    def pause(self): ...
-
-    @abstractmethod
-    def resume(self): ...
