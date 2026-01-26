@@ -20,3 +20,6 @@ class SpeakerInterface(ABC):
     def say_in_thread(
         self, text: str, options: Optional[SpeechOptions] = None
     ) -> t.Thread: ...
+
+    def close(self):
+        pass
