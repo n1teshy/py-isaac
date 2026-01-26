@@ -162,7 +162,7 @@ def display_status():
         "%sspeech:%s" % (BOLD_BRIGHT, RESET),
         "  %sstatus:%s %s"
         % (BRIGHT, RESET, label_switch(settings.speech_enabled)),
-        "  %svoice:%s %s" % (BRIGHT, RESET, glb.settings.piper_voice),
+        "  %svoice:%s %s" % (BRIGHT, RESET, glb.settings.voice),
         "%shearing:%s" % (BOLD_BRIGHT, RESET),
         "  %sstatus:%s %s"
         % (BRIGHT, RESET, label_switch(settings.hearing_enabled)),

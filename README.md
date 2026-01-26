@@ -29,7 +29,7 @@ I.S.A.A.C is a on-terminal AI assistant that lets you use ChatGPT-like features 
 - `:select` - selects from available options.
 - - `:select lm_provider` to select the language model provider.
 - - `:select lm` to select the model for generating responses.
-- - `:select voice` to select a [Piper](https://github.com/rhasspy/piper) text-to-speech model for the assistant to speak with.
+- - `:select voice` to select a [Piper](https://github.com/rhasspy/piper) text-to-speech model for the assistant to speak with or supply a `.wav` file to have your own custom voice via [Pocket TTS's](https://github.com/kyutai-labs/pocket-tts) voice cloning feature.
 - - `:select whisper` to select a [Whisper](https://github.com/openai/whisper) speech-to-text model for the assistant to interpret your voice with.
 
 ---
@@ -50,7 +50,7 @@ I.S.A.A.C is a on-terminal AI assistant that lets you use ChatGPT-like features 
 
 - [x] Free LLM APIs to process natural language queries.
 - [x] Voice-only conversations, assistant listens to you and speaks to you.
-- [x] Dozens of assistant voices and multiple options for the listening ability.
+- [x] Dozens of voice options, custom voice(cloning) and multiple options for the listening ability.
 - [x] Runs shell commands using the '!' (bang) prefix.
 - [x] Assistant mutes when user starts speaking
 - [x] Runs on both CPUs and GPUs.

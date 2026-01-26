@@ -5,6 +5,7 @@ import socket
 import subprocess
 import sys
 import tempfile
+import wave
 from typing import Optional, Union
 
 from rich.console import Console, ConsoleOptions
@@ -153,6 +154,14 @@ def get_piper_voice_enum(str_voice: str) -> Union[PiperVoiceUS, PiperVoiceGB]:
     for voice_enum in list(PiperVoiceUS) + list(PiperVoiceGB):
         if voice_enum.value == str_voice:
             return voice_enum
+
+
+def is_wavefile(file: str) -> bool:
+    try:
+        with wave.open(file, "rb"):
+            return True
+    except Exception:
+        return False
 
 
 def normalize_md(text: str) -> str:

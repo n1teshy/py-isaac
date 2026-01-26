@@ -1,9 +1,12 @@
 import getpass
+import importlib
 import json
 import os
 import re
+import shutil
 import string
 import threading
+from glob import glob
 
 from yapper import GeminiModel, GroqModel, PiperVoiceGB, PiperVoiceUS
 from yapper.constants import piper_voice_quality_map
@@ -21,6 +24,7 @@ from isaac.thinkers.groq import GroqThinker
 from isaac.types import SettingsInterface
 from isaac.utils import (
     get_piper_voice_enum,
+    is_wavefile,
     launch_text_editor,
     safe_print,
     select_from,
@@ -61,7 +65,7 @@ class Settings(SettingsInterface):
     """
 
     def __init__(self):
-        self.ensure_file()
+        self.ensure_files()
         cache = json.load(open(c.FILE_SETTINGS, encoding="utf-8"))
         self.groq_key = cache[c.STNG_FLD_GROQ][c.STNG_FLD_KEY]
         self.groq_model = cache[c.STNG_FLD_GROQ][c.STNG_FLD_MODEL]
@@ -70,7 +74,11 @@ class Settings(SettingsInterface):
         self.hearing_enabled = cache[c.STNG_FLD_HEARING][c.STNG_FLD_IS_ENABLED]
         self.whisper_size = cache[c.STNG_FLD_HEARING][c.STNG_FLD_WHISPER_SIZE]
         self.speech_enabled = cache[c.STNG_FLD_SPEECH][c.STNG_FLD_IS_ENABLED]
-        self.piper_voice = cache[c.STNG_FLD_SPEECH][c.STNG_FLD_PIPER_VOICE]
+        self.custom_voices = glob(os.path.join(c.VOICES_DIR, "*.wav"))
+        # this field was renamed, this is for backward-compatibility
+        self.voice = cache[c.STNG_FLD_SPEECH].get(
+            c.STNG_FLD_VOICE, PiperVoiceUS.HFC_FEMALE.value
+        )
         self.response_generator = cache[c.STNG_FLD_RSPNS_GENERATOR]
         self.system_message = cache[c.STNG_FLD_SYS_MESSAGE]
         self.context_enabled = cache[c.STNG_FLD_CONTEXT_ENABLED]
@@ -86,41 +94,41 @@ class Settings(SettingsInterface):
             return self.gemini_model
         return self.groq_model
 
-    def ensure_file(self):
+    def ensure_files(self):
         """
         ensures that the settings file exists, if not creates it
         with default values.
         """
-        if os.path.isfile(c.FILE_SETTINGS):
-            return
-
-        with open(c.FILE_SETTINGS, "w", encoding="utf-8") as f:
-            json.dump(
-                {
-                    c.STNG_FLD_GROQ: {
-                        c.STNG_FLD_KEY: None,
-                        c.STNG_FLD_MODEL: None,
+        os.makedirs(c.APP_DIR, exist_ok=True)
+        os.makedirs(c.VOICES_DIR, exist_ok=True)
+        if not os.path.isfile(c.FILE_SETTINGS):
+            with open(c.FILE_SETTINGS, "w", encoding="utf-8") as f:
+                json.dump(
+                    {
+                        c.STNG_FLD_GROQ: {
+                            c.STNG_FLD_KEY: None,
+                            c.STNG_FLD_MODEL: None,
+                        },
+                        c.STNG_FLD_GEMINI: {
+                            c.STNG_FLD_KEY: None,
+                            c.STNG_FLD_MODEL: None,
+                        },
+                        c.STNG_FLD_SPEECH: {
+                            c.STNG_FLD_IS_ENABLED: False,
+                            c.STNG_FLD_VOICE: PiperVoiceUS.HFC_FEMALE.value,
+                        },
+                        c.STNG_FLD_HEARING: {
+                            c.STNG_FLD_IS_ENABLED: False,
+                            c.STNG_FLD_WHISPER_SIZE: "auto",
+                        },
+                        c.STNG_FLD_RSPNS_GENERATOR: None,
+                        c.STNG_FLD_SYS_MESSAGE: None,
+                        c.STNG_FLD_CONTEXT_ENABLED: True,
+                        c.STNG_FLD_SHELL: c.FILE_SHELL,
                     },
-                    c.STNG_FLD_GEMINI: {
-                        c.STNG_FLD_KEY: None,
-                        c.STNG_FLD_MODEL: None,
-                    },
-                    c.STNG_FLD_SPEECH: {
-                        c.STNG_FLD_IS_ENABLED: False,
-                        c.STNG_FLD_PIPER_VOICE: PiperVoiceUS.HFC_FEMALE.value,
-                    },
-                    c.STNG_FLD_HEARING: {
-                        c.STNG_FLD_IS_ENABLED: False,
-                        c.STNG_FLD_WHISPER_SIZE: "auto",
-                    },
-                    c.STNG_FLD_RSPNS_GENERATOR: None,
-                    c.STNG_FLD_SYS_MESSAGE: None,
-                    c.STNG_FLD_CONTEXT_ENABLED: True,
-                    c.STNG_FLD_SHELL: c.FILE_SHELL,
-                },
-                f,
-                indent=2,
-            )
+                    f,
+                    indent=2,
+                )
 
     def dump_to_cache(self):
         """dumps settings to the default settings file."""
@@ -135,7 +143,7 @@ class Settings(SettingsInterface):
         }
         cache[c.STNG_FLD_SPEECH] = {
             c.STNG_FLD_IS_ENABLED: self.speech_enabled,
-            c.STNG_FLD_PIPER_VOICE: self.piper_voice,
+            c.STNG_FLD_VOICE: self.voice,
         }
         cache[c.STNG_FLD_HEARING] = {
             c.STNG_FLD_IS_ENABLED: self.hearing_enabled,
@@ -240,11 +248,17 @@ class Settings(SettingsInterface):
         response.
         """
         with sync.stdout_lock:
-            voice = get_piper_voice_enum(self.piper_voice)
-            onnx_f, conf_f = download_piper_model(
-                voice, piper_voice_quality_map[voice], True
-            )
-        glb.speaker = PiperSpeaker(onnx_f, conf_f)
+            if is_wavefile(self.voice):
+                # dynamic import because PocketSpeaker is heavy sl
+                from isaac.speakers.pocket import PocketSpeaker
+
+                glb.speaker = PocketSpeaker(self.voice)
+            else:
+                voice = get_piper_voice_enum(self.voice)
+                onnx_f, conf_f = download_piper_model(
+                    voice, piper_voice_quality_map[voice], True
+                )
+                glb.speaker = PiperSpeaker(onnx_f, conf_f)
         self.speech_enabled = True
         self.dump_to_cache()
 
@@ -257,13 +271,36 @@ class Settings(SettingsInterface):
         """
         lets the user select a piper voice for the assistant to speak with
         """
-        voices = [voice.value for voice in PiperVoiceUS] + [
-            voice.value for voice in PiperVoiceGB
-        ]
+        voices = (
+            ["custom voice (clone)"]
+            + self.custom_voices
+            + [voice.value for voice in PiperVoiceUS]
+            + [voice.value for voice in PiperVoiceGB]
+        )
         idx = select_from(voices, prompt="select a voice")
         if idx == -1:
             return
-        self.piper_voice = voices[idx]
+
+        if idx > 0:
+            self.voice = voices[idx]
+        else:
+            if importlib.util.find_spec("pocket-tts") is None:
+                safe_print(
+                    "please run `pip install py-isaac[custom-voice]` first"
+                )
+                return
+            while True:
+                safe_print("custom voice (wave file): ", end="")
+                file = os.path.abspath(input().strip())
+                if not is_wavefile(file):
+                    safe_print("invalid file, please input a valid wave file")
+                    continue
+                tgt_file = os.path.join(c.VOICES_DIR, os.path.basename(file))
+                shutil.copy2(file, tgt_file)
+                self.custom_voices.append(tgt_file)
+                self.voice = tgt_file
+                break
+
         if not self.speech_enabled:
             self.dump_to_cache()
         else:

@@ -48,7 +48,7 @@ STNG_FLD_MODEL = "model"
 STNG_FLD_HEARING = "hearing"
 STNG_FLD_WHISPER_SIZE = "whisperSize"
 STNG_FLD_SPEECH = "speech"
-STNG_FLD_PIPER_VOICE = "piperVoice"
+STNG_FLD_VOICE = "voice"
 STNG_FLD_IS_ENABLED = "isEnabled"
 STNG_FLD_RSPNS_GENERATOR = "responseGenerator"
 STNG_FLD_SYS_MESSAGE = "systemMessage"
@@ -71,6 +71,8 @@ elif os.name == "posix":
 else:
     print("your system is not supported")
     sys.exit()
+
+VOICES_DIR = os.path.join(APP_DIR, "voices")
 
 # File names
 FILE_SETTINGS = path.join(APP_DIR, "settings.json")

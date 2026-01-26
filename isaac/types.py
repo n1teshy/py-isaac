@@ -10,6 +10,7 @@ class SettingsInterface(ABC):
     hearing_enabled: bool
     whisper_size: str
     speech_enabled: bool
+    custom_voices: list[str]
     piper_voice: str
     response_generator: Literal["gemini", "groq"]
     system_message = Optional[str]

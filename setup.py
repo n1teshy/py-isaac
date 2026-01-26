@@ -29,6 +29,7 @@ setup(
         "rich",
         "pyreadline3; sys_platform == 'win32'",
     ],
+    extras_require={"custom-voice": ["pocket-tts"]},
     include_package_data=True,
     classifiers=[
         "Intended Audience :: Developers",
