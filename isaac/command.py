@@ -125,14 +125,14 @@ def handle_toggle(args: list[str]):
 def handle_cmd():
     """handles the `:cmd` command, i.e. launches the appropriate shell."""
     try:
-        if glb.listener is not None:
+        if glb.settings.hearing_enabled:
             glb.listener.pause()
         if platform.system() == "Windows":
             subprocess.run(["powershell.exe"])
         else:
             subprocess.run(["/bin/sh"])
     finally:
-        if glb.listener is not None:
+        if glb.settings.hearing_enabled:
             glb.listener.resume()
 
 
@@ -218,10 +218,10 @@ def display_commands():
 
 def handle_exit():
     glb.settings.dump_to_cache()
-    if glb.listener is not None:
+    if glb.settings.hearing_enabled:
         glb.listener.close()
         del glb.listener
-    if glb.speaker is not None:
+    if glb.settings.speech_enabled:
         mute()
         sync.speech_thread.join()
         glb.speaker.close()
