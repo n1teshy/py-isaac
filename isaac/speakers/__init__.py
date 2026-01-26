@@ -1,3 +1,4 @@
+import threading as t
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Optional
@@ -18,4 +19,4 @@ class SpeakerInterface(ABC):
     @abstractmethod
     def say_in_thread(
         self, text: str, options: Optional[SpeechOptions] = None
-    ) -> None: ...
+    ) -> t.Thread: ...

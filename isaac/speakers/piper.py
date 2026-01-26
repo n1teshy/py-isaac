@@ -7,7 +7,7 @@ from piper.voice import PiperVoice
 
 import isaac.sync as sync
 from isaac.speakers import SpeakerInterface, SpeechOptions
-from isaac.speakers.utils import unmute
+from isaac.speakers.utils import pre_speech
 
 
 class PiperSpeaker(SpeakerInterface):
@@ -25,8 +25,6 @@ class PiperSpeaker(SpeakerInterface):
     def say(self, text: str, options: Optional[SpeechOptions] = None) -> None:
         """Speaks the given text in a separate thread."""
         options = options or self.options
-        unmute()
-
         with sd.OutputStream(
             samplerate=options.sample_rate,
             channels=options.num_channels,
@@ -40,5 +38,9 @@ class PiperSpeaker(SpeakerInterface):
 
     def say_in_thread(
         self, text: str, options: Optional[SpeechOptions] = None
-    ) -> None:
-        threading.Thread(target=self.say, args=(text, options)).start()
+    ) -> threading.Thread:
+        pre_speech()
+        t = threading.Thread(target=self.say, args=(text, options))
+        sync.speech_thread = t
+        t.start()
+        return t
