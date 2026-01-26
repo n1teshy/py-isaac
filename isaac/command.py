@@ -219,7 +219,13 @@ def display_commands():
 def handle_exit():
     glb.settings.dump_to_cache()
     if glb.listener is not None:
-        glb.settings.disable_hearing()
+        glb.listener.close()
+        del glb.listener
+    if glb.speaker is not None:
+        mute()
+        sync.speech_thread.join()
+        glb.speaker.close()
+        del glb.speaker
 
 
 def handle_command(words: list[str]):
