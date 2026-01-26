@@ -27,6 +27,7 @@ setup(
         "psutil",
         "numpy",
         "rich",
+        "requests",
         "pyreadline3; sys_platform == 'win32'",
     ],
     extras_require={"custom-voice": ["pocket-tts"]},
