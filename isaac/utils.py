@@ -143,6 +143,11 @@ def launch_text_editor(initial: Optional[str] = None) -> str:
     return content
 
 
+def normalize_path(path: str) -> str:
+    path = os.path.abspath(os.path.expanduser(path))
+    return path.replace(os.sep, "/").rstrip("/")
+
+
 # --- speech ---
 
 

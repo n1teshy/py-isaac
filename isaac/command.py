@@ -223,7 +223,7 @@ def handle_exit():
         del glb.listener
     if glb.settings.speech_enabled:
         mute()
-        sync.speech_thread.join()
+        sync.speech_thread and sync.speech_thread.join()
         glb.speaker.close()
         del glb.speaker
 

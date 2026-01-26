@@ -2,11 +2,7 @@ import threading
 import wave
 from typing import Optional
 
-import numpy as np
 import sounddevice as sd
-import torch
-from pocket_tts import TTSModel
-from scipy.signal import resample_poly
 
 import isaac.sync as sync
 from isaac.speakers import SpeakerInterface, SpeechOptions
@@ -19,6 +15,8 @@ class PocketSpeaker(SpeakerInterface):
         voice_file: str,
         options: SpeechOptions = SpeechOptions(sample_rate=24000),
     ):
+        from pocket_tts import TTSModel
+
         self.tts = TTSModel.load_model()
         self.options = options
         device = next(self.tts.parameters()).device
@@ -26,7 +24,11 @@ class PocketSpeaker(SpeakerInterface):
             voice_file, self.tts.sample_rate, device
         )
 
-    def _load_wav(self, path: str, sample_rate: int, device: torch.device):
+    def _load_wav(self, path: str, sample_rate: int, device):
+        import numpy as np
+        import torch
+        from scipy.signal import resample_poly
+
         with wave.open(path, "rb") as wf:
             sr = wf.getframerate()
             n_channels = wf.getnchannels()

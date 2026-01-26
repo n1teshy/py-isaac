@@ -26,6 +26,7 @@ from isaac.utils import (
     get_piper_voice_enum,
     is_wavefile,
     launch_text_editor,
+    normalize_path,
     safe_print,
     select_from,
 )
@@ -284,14 +285,14 @@ class Settings(SettingsInterface):
         if idx > 0:
             self.voice = voices[idx]
         else:
-            if importlib.util.find_spec("pocket-tts") is None:
+            if importlib.util.find_spec("pocket_tts") is None:
                 safe_print(
                     "please run `pip install py-isaac[custom-voice]` first"
                 )
                 return
             while True:
                 safe_print("custom voice (wave file): ", end="")
-                file = os.path.abspath(input().strip())
+                file = normalize_path(input().strip())
                 if not is_wavefile(file):
                     safe_print("invalid file, please input a valid wave file")
                     continue
