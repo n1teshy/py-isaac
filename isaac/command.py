@@ -271,6 +271,9 @@ def run_query(query: str):
                 safe_print("invalid command")
         else:
             pre_query()
-            answer = glb.thinker.think(query)
-            handle_lm_response(answer)
-            post_query(query, answer)
+            try:
+                answer = glb.thinker.think(query)
+                handle_lm_response(answer)
+                post_query(query, answer)
+            except Exception as e:
+                safe_print(e)
