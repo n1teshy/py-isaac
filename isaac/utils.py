@@ -72,12 +72,12 @@ def print_welcome():
 
 def safe_input(message: str) -> str:
     try:
-        if glb.settings.hearing_enabled:
+        if glb.settings and glb.settings.hearing_enabled:
             glb.listener.pause()
         with sync.stdout_lock:
             return input(message)
     finally:
-        if glb.settings.hearing_enabled:
+        if glb.settings and glb.settings.hearing_enabled:
             glb.listener.resume()
 
 

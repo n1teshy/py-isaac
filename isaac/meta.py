@@ -1,3 +1,3 @@
 name = "py-isaac"
-version = "0.3.4"
+version = "0.3.5"
 github = "https://github.com/n1teshy/%s" % (name,)
